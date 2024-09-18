@@ -1,0 +1,50 @@
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from collections import Counter
+import string
+
+# Download necessary NLTK data files
+nltk.download('punkt')
+nltk.download('stopwords')
+
+def extract_keywords(file_path, num_keywords=10):
+    try:
+        # Read the file
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+    except FileNotFoundError:
+        print(f"Error: File not found at {file_path}")
+        return []
+    except UnicodeDecodeError:
+        print(f"Error: Unable to decode file at {file_path}")
+        return []
+
+    # Tokenize the text
+    tokens = word_tokenize(text)
+
+    # Convert to lowercase and remove punctuation
+    tokens = [word.lower() for word in tokens if word.isalnum()]
+
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    tokens = [word for word in tokens if word not in stop_words]
+
+    # Count the frequency of each word
+    word_counts = Counter(tokens)
+
+    # Get the most common words
+    keywords = word_counts.most_common(num_keywords)
+
+    return keywords
+
+# Example usage
+file_path = 'sample.txt'  # Replace with your text file path
+keywords = extract_keywords(file_path)
+
+if keywords:
+    print("Keywords and their frequencies:")
+    for word, freq in keywords:
+        print(f"{word}: {freq}")
+else:
+    print("No keywords extracted.")
